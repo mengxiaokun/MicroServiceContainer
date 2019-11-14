@@ -4,16 +4,17 @@
 
 #include <memory>
 #include <string>
-#include "Service.h"
+#include "IMicroService.h"
 #include "Transmitter.h"
 
 namespace elastos {
 
-class MicroService : public Service {
+class MicroService : public IMicroService {
 
 public:
     MicroService(const std::string& path, const std::string& publicKey)
-        : Service(path, publicKey)
+        : mPath(path)
+        , mPublicKey(publicKey)
     {
         Init();
     }
@@ -30,8 +31,12 @@ public:
 private:
     void Init();
 
-private:
 
+protected:
+    std::string mPath;
+    std::string mPublicKey;
+
+private:
     std::shared_ptr<Transmitter> mTransmitter;
 
 };

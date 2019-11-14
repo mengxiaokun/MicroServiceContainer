@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string>
 #include <dlfcn.h>
-#include <Service.h>
+#include <IMicroService.h>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
@@ -11,7 +11,9 @@
 
 using namespace elastos;
 
-typedef Service* (*Creator)(const std::string& path, const std::string& pubkey);
+typedef IMicroService* (*Creator)(const char* path, const char* pubkey);
+
+typedef void (*Destroy)(IMicroService* service);
 
 std::condition_variable cv;
 std::mutex mutex;
@@ -28,7 +30,7 @@ void StartService(const std::string& library, const std::string& path, const std
     }
 
     Creator CreateService;
-    Service* service;
+    IMicroService* service;
     int ret;
 
     *(void**)(&CreateService) = dlsym(handle, "CreateService");
@@ -38,7 +40,7 @@ void StartService(const std::string& library, const std::string& path, const std
         return;
     }
 
-    service = CreateService(path, publicKey);
+    service = CreateService(path.c_str(), publicKey.c_str());
     if (service == NULL) {
         fprintf(stderr, "Create Service failed!\n");
         dlclose(handle);
@@ -59,6 +61,17 @@ void StartService(const std::string& library, const std::string& path, const std
     }
 
     service->Stop();
+
+    Destroy DestroyService;
+    *(void**)(&DestroyService) = dlsym(handle, "DestroyService");
+    if (CreateService == NULL) {
+        fprintf(stderr, "Error: %s\n", dlerror());
+        dlclose(handle);
+        return;
+    }
+
+    DestroyService(service);
+    dlclose(handle);
 }
 
 void StopService(std::thread& workthread) {

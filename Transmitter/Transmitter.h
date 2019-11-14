@@ -4,7 +4,7 @@
 
 #include <memory>
 #include <string>
-#include "Service.h"
+#include "IMicroService.h"
 
 namespace elastos {
 
@@ -15,7 +15,7 @@ public:
         s_instance = NULL;
     }
 
-    static std::shared_ptr<Transmitter> Instance(const std::string& path, const std::string& publicKey, Service* service);
+    static std::shared_ptr<Transmitter> Instance(const std::string& path, const std::string& publicKey, IMicroService* service);
 
     int Start();
 
@@ -24,7 +24,7 @@ public:
     int SendMessage(const std::string& did, const std::string& msg);
 
 private:
-    Transmitter(Service* service)
+    Transmitter(IMicroService* service)
         : mService(service)
     {
     }
@@ -32,7 +32,7 @@ private:
 private:
     static Transmitter* s_instance;
 
-    Service* mService;
+    IMicroService* mService;
 };
 
 }

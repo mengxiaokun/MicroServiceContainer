@@ -5,7 +5,7 @@ namespace elastos {
 
 Transmitter* Transmitter::s_instance = NULL;
 
-std::shared_ptr<Transmitter> Transmitter::Instance(const std::string& path, const std::string& publicKey, Service* service)
+std::shared_ptr<Transmitter> Transmitter::Instance(const std::string& path, const std::string& publicKey, IMicroService* service)
 {
     if (s_instance == NULL) {
         s_instance = new Transmitter(service);

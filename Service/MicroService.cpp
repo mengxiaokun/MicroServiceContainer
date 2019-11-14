@@ -3,9 +3,21 @@
 
 namespace elastos {
 
-extern "C" MicroService* CreateService(const std::string& path, const std::string& publicKey)
+extern "C" {
+
+MicroService* CreateService(const char* path, const char* publicKey)
+
 {
     return new MicroService(path, publicKey);
+}
+
+void DestroyService(MicroService* service)
+{
+    if (service) {
+        delete service;
+    }
+}
+
 }
 
 void MicroService::Init()
